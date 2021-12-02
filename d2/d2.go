@@ -2,27 +2,39 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/bhesmans/aoc-2021/internal/tools"
 )
 
 type pos struct {
-	hor   int
-	depth int
-	aim   int
+	Hor   int
+	Depth int
+	Aim   int
 }
 
 func (p *pos) times(x int) {
-	p.hor *= x
-	p.depth *= x
-	p.aim *= x
+	// p.Hor *= x
+	// p.Depth *= x
+	// p.Aim *= x
+
+	v := reflect.Indirect(reflect.ValueOf(p))
+	for i := 0; i < v.NumField(); i++ {
+		v.Field(i).SetInt(v.Field(i).Int() * int64(x))
+	}
 }
 
 func (p *pos) add(p2 pos) {
-	p.hor += p2.hor
-	p.depth += p2.depth
-	p.aim += p2.aim
+	// p.Hor += p2.Hor
+	// p.Depth += p2.Depth
+	// p.Aim += p2.Aim
+
+	v := reflect.Indirect(reflect.ValueOf(p))
+	v2 := reflect.ValueOf(p2)
+	for i := 0; i < v.NumField(); i++ {
+		v.Field(i).SetInt(v.Field(i).Int() + v2.Field(i).Int())
+	}
 }
 
 func partx(d map[string]pos, aimFactor int) int {
@@ -39,20 +51,20 @@ func partx(d map[string]pos, aimFactor int) int {
 		p.add(step)
 
 		if dir == "forward" {
-			aim := pos{depth: aimFactor}
-			aim.times(amplitude * p.aim)
+			aim := pos{Depth: aimFactor}
+			aim.times(amplitude * p.Aim)
 			p.add(aim)
 		}
 	}
 
-	return p.hor * p.depth
+	return p.Hor * p.Depth
 }
 
 func part1() int {
 	dirs := map[string]pos{
-		"forward": {hor: 1},
-		"up":      {depth: -1},
-		"down":    {depth: 1},
+		"forward": {Hor: 1},
+		"up":      {Depth: -1},
+		"down":    {Depth: 1},
 	}
 
 	return partx(dirs, 0)
@@ -60,9 +72,9 @@ func part1() int {
 
 func part2() int {
 	dirs := map[string]pos{
-		"forward": {hor: 1},
-		"up":      {aim: -1},
-		"down":    {aim: 1},
+		"forward": {Hor: 1},
+		"up":      {Aim: -1},
+		"down":    {Aim: 1},
 	}
 
 	return partx(dirs, 1)
