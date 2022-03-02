@@ -22,7 +22,7 @@ type input struct {
 
 var sigToDec map[int]int
 
-func sigToInt(s string) int {
+func sigToInt(s signal) int {
 	ret := 0
 	for _, c := range s {
 		ret += 1 << (c - 'a')
@@ -31,7 +31,7 @@ func sigToInt(s string) int {
 	return ret
 }
 
-func minus(s1, s2 signal) string {
+func minus(s1, s2 signal) signal {
 	ret := ""
 	for _, c := range s1 {
 		if !strings.ContainsAny(s2, string(c)) {
@@ -71,22 +71,22 @@ func (d *display) doMapping() {
 	a := minus(d.find7(), d.find1())[0]
 	d.mapping[a] = 'a'
 	// g
-	g := minus(minus(d.find3(), d.find4()), string(a))[0]
+	g := minus(minus(d.find3(), d.find4()), signal(a))[0]
 	d.mapping[g] = 'g'
 	// e
-	e := minus(minus(minus(d.find8(), d.find4()), string(a)), string(g))[0]
+	e := minus(minus(minus(d.find8(), d.find4()), signal(a)), signal(g))[0]
 	d.mapping[e] = 'e'
 	// d
-	dd := minus(minus(minus(d.find2(), d.find7()), string(e)), string(g))[0]
+	dd := minus(minus(minus(d.find2(), d.find7()), signal(e)), signal(g))[0]
 	d.mapping[dd] = 'd'
 	// b
-	b := minus(minus(d.find4(), d.find1()), string(dd))[0]
+	b := minus(minus(d.find4(), d.find1()), signal(dd))[0]
 	d.mapping[b] = 'b'
 	// c
-	c := minus(minus(minus(minus(d.find2(), string(dd)), string(g)), string(e)), string(a))[0]
+	c := minus(minus(minus(minus(d.find2(), signal(dd)), signal(g)), signal(e)), signal(a))[0]
 	d.mapping[c] = 'c'
 	// f
-	f := minus(minus(minus(minus(minus(minus(d.find8(), string(a)), string(b)), string(c)), string(dd)), string(e)), string(g))[0]
+	f := minus(minus(minus(minus(minus(minus(d.find8(), signal(a)), signal(b)), signal(c)), signal(dd)), signal(e)), signal(g))[0]
 	d.mapping[f] = 'f'
 
 	return
@@ -111,7 +111,7 @@ func newInput() *input {
 	return &ret
 }
 
-func is1478(s string) bool {
+func is1478(s signal) bool {
 	l := len(s)
 	return l == 2 || l == 4 || l == 3 || l == 7
 }
